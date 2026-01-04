@@ -311,7 +311,7 @@ function App() {
                 </div>
 
                 {isToday && (
-                  <div className="absolute bottom-2 border-1 border-primary text-foreground text-xs px-2 py-1 rounded-full font-medium">
+                  <div className="absolute border-primary font-bold px-2 py-1 text-foreground text-xs top-0">
                     TODAY
                   </div>
                 )}
