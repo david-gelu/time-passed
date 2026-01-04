@@ -12,6 +12,7 @@ import {
   differenceInDays,
   differenceInMonths,
   differenceInYears,
+  getISOWeeksInYear,
 } from "date-fns";
 import { ro } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -78,6 +79,7 @@ function App() {
 
   const currentWeek = getWeek(selectedDate, { weekStartsOn: 1 });
   const currentYear = getYear(selectedDate);
+  const totalWeeksInYear = getISOWeeksInYear(selectedDate);
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
 
   const weekDays = Array.from({ length: 7 }).map((_, i) => {
@@ -109,9 +111,9 @@ function App() {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Weekly Calendar</h1>
+          <h1 className="text-4xl font-bold mb-2">Time passed since</h1>
           <p className="text-gray-400">
-            Explore the weeks of the year <ThemeSwitcher />
+            Explore time passed since {format(selectedDate, 'dd-MM-yyyy')} until {format(today, 'dd-MM-yyyy')} <ThemeSwitcher />
           </p>
         </div>
 
@@ -248,8 +250,8 @@ function App() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-3xl text-white">Week {currentWeek}</CardTitle>
-                <CardDescription className="text-indigo-100">
+                <CardTitle className="text-3xl">Week {currentWeek}</CardTitle>
+                <CardDescription className="">
                   {currentYear} · {format(weekDays[0], "dd MMMM", { locale: ro })} -{" "}
                   {format(weekDays[6], "dd MMMM yyyy", { locale: ro })}
                 </CardDescription>
@@ -274,36 +276,45 @@ function App() {
           {weekDays.map((day, index) => {
             const dayCompare = new Date(day);
             dayCompare.setHours(0, 0, 0, 0);
+            const selectedCompare = new Date(selectedDate);
+            selectedCompare.setHours(0, 0, 0, 0);
             const isToday = dayCompare.getTime() === today.getTime();
+            const isSelected = dayCompare.getTime() === selectedCompare.getTime();
             const dayName = format(day, "EEEE", { locale: ro });
             const dayDate = format(day, "dd");
             const monthName = format(day, "MMMM", { locale: ro });
 
             return (
-              <Card
+              <div
                 key={index}
-                className={`shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer ${isToday
-                  ? "bg-gradient-to-b from-green-400 to-green-500 border-green-600 border-2"
-                  : "hover:shadow-lg"
-                  }`}
+                onClick={() => {
+                  setSelectedDate(day);
+                  setInputValue(format(day, "dd.MM.yyyy"));
+                  setError(null);
+                }}
+                className={`flex flex-col items-center justify-center p-4 bg-card rounded-lg min-h-[120px] relative cursor-pointer transition-all
+                   ${isSelected ?
+                    "ring-2 ring-primary " :
+                    isToday
+                      ? "bg-gradient-to-b from-green-400 to-green-500 border-green-600 border-2"
+                      : "hover:border-1 hover:border-primary"}`}
               >
-                <CardContent className="p-6 text-center">
-                  <p className={`text-sm font-semibold mb-2 capitalize ${isToday ? "text-white" : "text-gray-200"}`}>
-                    {dayName}
-                  </p>
-                  <p className={`text-3xl font-bold mb-1 ${isToday ? "text-white" : "text-gray-300"}`}>
-                    {dayDate}
-                  </p>
-                  <p className={`text-xs capitalize ${isToday ? "opacity-90" : "text-gray-400"}`}>
-                    {monthName}
-                  </p>
-                  {isToday && (
-                    <div className="mt-3 inline-block text-green-500 text-xs font-bold px-2 py-1 rounded-full">
-                      TODAY
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                <div className="text-sm font-medium mb-1">
+                  {dayName}
+                </div>
+                <div className="text-3xl font-bold mb-1">
+                  {dayDate}
+                </div>
+                <div className="text-xs">
+                  {monthName}
+                </div>
+
+                {isToday && (
+                  <div className="absolute bottom-2 border-1 border-primary text-foreground text-xs px-2 py-1 rounded-full font-medium">
+                    TODAY
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
@@ -311,7 +322,7 @@ function App() {
         {/* Footer */}
         <div className="text-center text-gray-600">
           <p className="text-sm">
-            Total weeks in {currentYear}: <strong>52</strong>
+            Total weeks in {currentYear}: <strong>{totalWeeksInYear}</strong>
           </p>
         </div>
       </div>
