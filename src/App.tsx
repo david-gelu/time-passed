@@ -145,6 +145,7 @@ function App() {
                           setError(null);
                         }
                       }}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
                     />
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-2 bg-red-100 text-red-700 rounded-md">
@@ -292,12 +293,8 @@ function App() {
                   setInputValue(format(day, "dd.MM.yyyy"));
                   setError(null);
                 }}
-                className={`flex flex-col items-center justify-center p-4 bg-card rounded-lg min-h-[120px] relative cursor-pointer transition-all
-                   ${isSelected ?
-                    "ring-2 ring-primary " :
-                    isToday
-                      ? "bg-gradient-to-b from-green-400 to-green-500 border-green-600 border-2"
-                      : "hover:border-1 hover:border-primary"}`}
+                className={`flex flex-col items-center justify-center p-4 rounded-lg min-h-[120px] relative cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-gray-700 ${isSelected ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""
+                  }`}
               >
                 <div className="text-sm font-medium mb-1">
                   {dayName}
@@ -310,7 +307,7 @@ function App() {
                 </div>
 
                 {isToday && (
-                  <div className="absolute bottom-2 border-1 border-primary text-foreground text-xs px-2 py-1 rounded-full font-medium">
+                  <div className="absolute bottom-2 bg-primary text-foreground text-xs px-2 py-1 rounded-full font-medium">
                     TODAY
                   </div>
                 )}
